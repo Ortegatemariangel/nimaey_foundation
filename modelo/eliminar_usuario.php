@@ -1,83 +1,9 @@
 <?php
-require '../config/conexion.php';
-
-session_start();
-
-if(!isset($_SESSION['username']))
-{
-    header('location: ../index.php');
+require_once __DIR__ . '/../config/conexion.php';require_once __DIR__ . '/../config/seguridad.php';exigir_rol('Admin');
+$error='';$exito='';
+if($_SERVER['REQUEST_METHOD']==='POST'){
+$tipo=$_POST['tipo_usuario']??'';$id=trim($_POST['id_usuario']??'');$tablas=['Donante'=>['tabla'=>'Donante','campo'=>'id_usuario_donante'],'Beneficiario'=>['tabla'=>'Beneficiario','campo'=>'id_usuario_beneficiario']];
+if(!isset($tablas[$tipo])||$id===''){$error='Selecciona un tipo de usuario e ingresa su identificación.';}
+else{$c=$tablas[$tipo];$conexion=conectar();$stmt=mysqli_prepare($conexion,"DELETE FROM {$c['tabla']} WHERE {$c['campo']}=?");if($stmt){mysqli_stmt_bind_param($stmt,'s',$id);if(mysqli_stmt_execute($stmt)){$exito=mysqli_stmt_affected_rows($stmt)>0?'El usuario fue eliminado correctamente.':'No se encontró un usuario con esa identificación.';}else{$error='No fue posible eliminar el usuario. Puede tener información relacionada.';error_log(mysqli_error($conexion));}mysqli_stmt_close($stmt);}else{$error='No fue posible preparar la eliminación.';}mysqli_close($conexion);}
 }
-
-$conexion = conectar();
-
-if(isset($_POST['eliminar']))
-{
-    $tipo = $_POST['tipo_usuario'];
-    $id = $_POST['id_usuario'];
-
-    if($tipo=="Donante")
-    {
-        $query = "DELETE FROM Donante
-                  WHERE id_usuario_donante='$id'";
-    }
-
-    if($tipo=="Beneficiario")
-    {
-        $query = "DELETE FROM Beneficiario
-                  WHERE id_usuario_beneficiario='$id'";
-    }
-
-    mysqli_query($conexion,$query);
-
-    echo "<h3>Usuario eliminado correctamente</h3>";
-}
-?>
-
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Nimaey Foundation</title>
-
-    <link rel="stylesheet" href="../estilos.css">
-
-</head>
-
-<body>
-
-<h1>Eliminar Usuario</h1>
-
-<form method="POST">
-
-    <label>Tipo Usuario:</label>
-
-    <select name="tipo_usuario">
-
-        <option value="Donante">Donante</option>
-
-        <option value="Beneficiario">Beneficiario</option>
-
-    </select>
-
-    <br><br>
-
-    <label>ID Usuario:</label>
-
-    <input type="text" name="id_usuario" required>
-
-    <br><br>
-
-    <button type="submit" name="eliminar">
-        Eliminar
-    </button>
-
-</form>
-
-</body>
-</html>
-
+?><!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Eliminar usuario | Nimaey</title><link rel="stylesheet" href="../estilos.css"></head><body class="app-body"><header class="topbar"><a class="brand" href="../pagina_usuario.php"><span class="brand-mark">N</span><span>Nimaey <small>FOUNDATION</small></span></a><a class="btn btn-outline-light btn-small" href="cerrar_sesion.php">Cerrar sesión</a></header><main class="page-wrap"><div class="page-heading"><div><p class="eyebrow">ADMINISTRACIÓN</p><h1>Eliminar usuario</h1><p>Esta acción elimina el registro seleccionado. Verifica los datos antes de continuar.</p></div><a class="btn btn-secondary" href="../pagina_usuario.php">← Volver al panel</a></div><section class="panel-card"><?php if($error): ?><div class="mensaje mensaje-error"><?= escapar($error) ?></div><?php endif; ?><?php if($exito): ?><div class="mensaje"><?= escapar($exito) ?></div><?php endif; ?><form method="POST" onsubmit="return confirm('¿Estás segura de que deseas eliminar este usuario? Esta acción no se puede deshacer.');"><label for="tipo">Tipo de usuario</label><select id="tipo" name="tipo_usuario" required><option value="Donante">Donante</option><option value="Beneficiario">Beneficiario</option></select><label for="id">Identificación del usuario</label><input id="id" name="id_usuario" maxlength="10" required><div class="form-actions"><a class="btn btn-secondary" href="../pagina_usuario.php">Cancelar</a><button type="submit">Eliminar usuario</button></div></form></section></main><footer>Nimaey Foundation · Sembrando esperanza, cosechando futuro.</footer></body></html>
