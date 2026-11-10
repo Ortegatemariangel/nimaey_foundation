@@ -1,92 +1,11 @@
 <?php
-    error_reporting(E_ALL);
-    ini_set('display_errors', '1');
-
-    require '../config/conexion.php';
-
-    session_start();
-
-    if(!isset($_SESSION['username']))
-    {
-        header('location: ../index.php');
-    }
-
-    $conexion = conectar();
-
-    if(isset($_POST['registrar']))
-    {
-        $id_usuario_beneficiario = $_POST['id_usuario_beneficiario'];
-        $nombre_beneficiario = $_POST['nombre_beneficiario'];
-        $correo_beneficiario = $_POST['correo_beneficiario'];
-        $contrasena_beneficiario = $_POST['contrasena_beneficiario'];
-        $fecha_registro_beneficiario = $_POST['fecha_registro_beneficiario'];
-
-        $query = "INSERT INTO Beneficiario
-        VALUES(
-        '$id_usuario_beneficiario',
-        '$nombre_beneficiario',
-        '$correo_beneficiario',
-        '$contrasena_beneficiario',
-        '$fecha_registro_beneficiario'
-        )";
-
-        mysqli_query($conexion,$query)
-        or trigger_error("Error: ".mysqli_error($conexion));
-
-        echo "<h3>Beneficiario registrado correctamente</h3>";
-    }
+require_once __DIR__ . '/../config/conexion.php';require_once __DIR__ . '/../config/seguridad.php';exigir_rol('Admin');
+$error='';
+if($_SERVER['REQUEST_METHOD']==='POST'){
+$id=trim($_POST['id_usuario_beneficiario']??'');$nombre=trim($_POST['nombre_beneficiario']??'');$correo=trim($_POST['correo_beneficiario']??'');$clave=$_POST['contrasena_beneficiario']??'';$fecha=$_POST['fecha_registro_beneficiario']??'';
+if($id===''||$nombre===''||!filter_var($correo,FILTER_VALIDATE_EMAIL)||$clave===''||$fecha===''){$error='Completa todos los campos y verifica que el correo sea válido.';}
+else{$conexion=conectar();$sql="INSERT INTO Beneficiario (id_usuario_beneficiario,nombre_beneficiario,correo_beneficiario,contraseña_beneficiario,fecha_registro_beneficiario) VALUES (?,?,?,?,?)";$stmt=mysqli_prepare($conexion,$sql);
+if($stmt){mysqli_stmt_bind_param($stmt,'sssss',$id,$nombre,$correo,$clave,$fecha);if(mysqli_stmt_execute($stmt)){mysqli_stmt_close($stmt);mysqli_close($conexion);header('Location: registro_exitoso.php?tipo=beneficiario');exit();}$error=mysqli_errno($conexion)===1062?'Ya existe un usuario con ese identificador.':'No fue posible guardar el beneficiario. Revisa los datos.';error_log(mysqli_error($conexion));mysqli_stmt_close($stmt);}else{$error='No fue posible preparar el registro.';error_log(mysqli_error($conexion));}mysqli_close($conexion);}
+}
 ?>
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Nimaey Foundation</title>
-
-    <link rel="stylesheet" href="../estilos.css">
-
-</head>
-
-<body>
-    
-<h1>Registrar Beneficiario</h1>
-
-<form method="POST">
-
-    <label>ID:</label>
-    <input type="text" name="id_usuario_beneficiario" required>
-
-    <br><br>
-
-    <label>Nombre:</label>
-    <input type="text" name="nombre_beneficiario" required>
-
-    <br><br>
-
-    <label>Correo:</label>
-    <input type="email" name="correo_beneficiario" required>
-
-    <br><br>
-
-    <label>Contraseña:</label>
-    <input type="text" name="contrasena_beneficiario" required>
-
-    <br><br>
-
-    <label>Fecha:</label>
-    <input type="date" name="fecha_registro_beneficiario" required>
-
-    <br><br>
-
-    <button type="submit" name="registrar">
-        Registrar
-    </button>
-
-</form>
-
-</body>
-</html>
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Registrar beneficiario | Nimaey</title><link rel="stylesheet" href="../estilos.css"></head><body class="app-body"><header class="topbar"><a class="brand" href="../pagina_usuario.php"><span class="brand-mark">N</span><span>Nimaey <small>FOUNDATION</small></span></a><a class="btn btn-outline-light btn-small" href="cerrar_sesion.php">Cerrar sesión</a></header><main class="page-wrap"><div class="page-heading"><div><p class="eyebrow">ADMINISTRACIÓN</p><h1>Registrar beneficiario</h1><p>Registra al estudiante que recibirá acompañamiento de Nimaey.</p></div><a class="btn btn-secondary" href="../pagina_usuario.php">← Volver al panel</a></div><section class="panel-card"><?php if($error!==''): ?><div class="mensaje mensaje-error"><?= escapar($error) ?></div><?php endif; ?><form method="POST"><label for="id">Identificación</label><input id="id" name="id_usuario_beneficiario" maxlength="10" required value="<?= escapar($_POST['id_usuario_beneficiario']??'') ?>"><label for="nombre">Nombre completo</label><input id="nombre" name="nombre_beneficiario" maxlength="30" required value="<?= escapar($_POST['nombre_beneficiario']??'') ?>"><label for="correo">Correo electrónico</label><input id="correo" type="email" name="correo_beneficiario" maxlength="30" required value="<?= escapar($_POST['correo_beneficiario']??'') ?>"><label for="clave">Contraseña inicial</label><input id="clave" type="password" name="contrasena_beneficiario" required autocomplete="new-password"><label for="fecha">Fecha de registro</label><input id="fecha" type="date" name="fecha_registro_beneficiario" required value="<?= escapar($_POST['fecha_registro_beneficiario']??date('Y-m-d')) ?>"><div class="form-actions"><a class="btn btn-secondary" href="../pagina_usuario.php">Cancelar</a><button type="submit">Guardar beneficiario</button></div></form></section></main><footer>Nimaey Foundation · Sembrando esperanza, cosechando futuro.</footer></body></html>
