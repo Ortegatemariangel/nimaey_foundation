@@ -1,0 +1,301 @@
+
+/* =====================================
+   NIMAEY FOUNDATION
+   Identidad visual principal
+===================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --verde: #173C35;
+    --verde-claro: #D7E3D7;
+    --marfil: #F7F5EF;
+    --blanco: #FFFFFF;
+    --dorado: #D7A66B;
+    --grafito: #263238;
+    --gris: #74817D;
+    --borde: #E5E9E4;
+    --sombra: 0 12px 35px rgba(23, 60, 53, 0.08);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--marfil);
+    color: var(--grafito);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+h1, h2, h3 {
+    font-family: 'Manrope', sans-serif;
+    color: var(--verde);
+    line-height: 1.25;
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: 800;
+}
+
+h2 {
+    font-size: 23px;
+    margin-bottom: 12px;
+}
+
+p {
+    color: var(--gris);
+}
+
+/* ENCABEZADO */
+
+header {
+    background: var(--verde);
+    color: white;
+    padding: 22px 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+header h1 {
+    color: white;
+    font-size: 25px;
+}
+
+header p {
+    color: #D7E3D7;
+    font-size: 13px;
+}
+
+/* CONTENEDORES */
+
+main {
+    width: min(1100px, 90%);
+    margin: 45px auto;
+}
+
+.container {
+    width: min(600px, 90%);
+    margin: 55px auto;
+    background: var(--blanco);
+    padding: 38px;
+    border-radius: 20px;
+    box-shadow: var(--sombra);
+}
+
+.descripcion {
+    margin: 10px 0 25px;
+    font-size: 15px;
+}
+
+/* FORMULARIOS */
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    margin-top: 20px;
+}
+
+label {
+    color: var(--grafito);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    background: #FCFDFC;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--grafito);
+    outline: none;
+    transition: 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--verde);
+    box-shadow: 0 0 0 3px rgba(23, 60, 53, 0.10);
+}
+
+/* BOTONES */
+
+button {
+    border: none;
+    border-radius: 10px;
+    background: var(--verde);
+    color: white;
+    padding: 13px 20px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #24574C;
+    transform: translateY(-2px);
+}
+
+/* ENLACES */
+
+a {
+    color: var(--verde);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+a:hover {
+    color: #B47C3F;
+}
+
+/* MENÚ PRINCIPAL */
+
+.bienvenida {
+    margin-bottom: 35px;
+}
+
+.bienvenida h2 {
+    font-size: 29px;
+}
+
+.bienvenida p {
+    margin-top: 8px;
+}
+
+.seccion {
+    margin: 35px 0;
+}
+
+.seccion h2 {
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.tarjetas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.tarjeta {
+    display: block;
+    background: white;
+    padding: 23px;
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(23, 60, 53, 0.04);
+    transition: 0.2s;
+}
+
+.tarjeta:hover {
+    transform: translateY(-4px);
+    border-color: var(--dorado);
+    box-shadow: var(--sombra);
+}
+
+.tarjeta strong {
+    display: block;
+    font-family: 'Manrope', sans-serif;
+    font-size: 17px;
+    margin-bottom: 6px;
+}
+
+.tarjeta span {
+    display: block;
+    color: var(--gris);
+    font-size: 13px;
+    font-weight: 400;
+}
+
+/* TABLAS */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+th {
+    background: var(--verde);
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-size: 13px;
+}
+
+td {
+    padding: 13px 15px;
+    border-bottom: 1px solid var(--borde);
+    font-size: 13px;
+}
+
+tr:nth-child(even) {
+    background: #F7F9F6;
+}
+
+/* MENSAJES */
+
+.mensaje {
+    padding: 14px;
+    border-radius: 10px;
+    background: var(--verde-claro);
+    color: var(--verde);
+    margin: 15px 0;
+}
+
+/* PIE DE PÁGINA */
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: var(--gris);
+    font-size: 13px;
+}
+
+/* DISEÑO RESPONSIVE */
+
+@media (max-width: 650px) {
+    header {
+        padding: 20px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    main {
+        margin: 28px auto;
+    }
+
+    .container {
+        padding: 25px 20px;
+        margin: 30px auto;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    .tarjetas {
+        grid-template-columns: 1fr;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+}

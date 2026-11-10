@@ -1,88 +1,151 @@
+
 <?php
 
 session_start();
 
-if(!isset($_SESSION['username']))
-{
-    header('location: index.php');
+if (!isset($_SESSION['username'])) {
+    header('Location: index.php');
+    exit();
 }
 
-$nombre_usuario = $_SESSION['username'];
+$nombre_usuario = htmlspecialchars(
+    $_SESSION['username'],
+    ENT_QUOTES,
+    'UTF-8'
+);
+
+$tipo_usuario = htmlspecialchars(
+    $_SESSION['tipo_usuario'] ?? 'Usuario',
+    ENT_QUOTES,
+    'UTF-8'
+);
 
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
+
 <head>
-    <title>Página Usuario</title>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Panel principal | Nimaey Foundation</title>
+
+    <link rel="stylesheet" href="estilos.css">
+
 </head>
+
 <body>
 
-<h1>Nimaey Foundation</h1>
+<header>
 
-<hr>
+    <div>
+        <h1>Nimaey Foundation</h1>
+        <p>Porque cada historia merece una oportunidad.</p>
+    </div>
 
-<?php
-echo 'Usuario: '.$nombre_usuario;
-?>
+    <a href="modelo/cerrar_sesion.php" style="color:white;">
+        Cerrar sesión
+    </a>
 
-<hr>
+</header>
 
-<h2>Registros</h2>
+<main>
 
-<a href="modelo/reg_donante.php">
-Registrar Donante
-</a>
+    <section class="bienvenida">
 
-<br><br>
+        <h2>¡Bienvenido a Nimaey!</h2>
 
-<a href="modelo/reg_beneficiario.php">
-Registrar Beneficiario
-</a>
+        <p>
+            Nos alegra tenerte aquí.
+            Desde este espacio puedes gestionar la información
+            de nuestra comunidad solidaria.
+        </p>
 
-<hr>
+        <p>
+            <strong>Usuario:</strong> <?php echo $nombre_usuario; ?>
+            <br>
+            <strong>Perfil:</strong> <?php echo $tipo_usuario; ?>
+        </p>
 
-<h2>Consultas</h2>
+    </section>
 
-<a href="modelo/consulta_donantes.php">
-Consultar Donantes
-</a>
+    <section class="seccion">
 
-<br><br>
+        <h2>Gestión de registros</h2>
 
-<a href="modelo/consulta_beneficiarios.php">
-Consultar Beneficiarios
-</a>
+        <div class="tarjetas">
 
-<hr>
+            <a class="tarjeta" href="modelo/reg_donante.php">
+                <strong>Registrar donante</strong>
+                <span>Agregar personas que desean brindar apoyo.</span>
+            </a>
 
-<h2>Actualizaciones</h2>
+            <a class="tarjeta" href="modelo/reg_beneficiario.php">
+                <strong>Registrar beneficiario</strong>
+                <span>Registrar estudiantes que necesitan ayuda.</span>
+            </a>
 
-<a href="modelo/act_donante.php">
-Actualizar Donante
-</a>
+        </div>
 
-<br><br>
+    </section>
 
-<a href="modelo/act_beneficiario.php">
-Actualizar Beneficiario
-</a>
+    <section class="seccion">
 
-<hr>
+        <h2>Consultas</h2>
 
-<h2>Eliminar Usuario</h2>
+        <div class="tarjetas">
 
-<a href="modelo/eliminar_usuario.php">
-Eliminar Donante o Beneficiario
-</a>
+            <a class="tarjeta" href="modelo/consulta_donantes.php">
+                <strong>Consultar donantes</strong>
+                <span>Visualizar la información de los donantes.</span>
+            </a>
 
-<hr>
+            <a class="tarjeta" href="modelo/consulta_beneficiarios.php">
+                <strong>Consultar beneficiarios</strong>
+                <span>Consultar los beneficiarios registrados.</span>
+            </a>
 
-<h2>Salir</h2>
+        </div>
 
-<a href="modelo/cerrar_sesion.php">
-Cerrar sesión
-</a>
+    </section>
+
+    <section class="seccion">
+
+        <h2>Administración de información</h2>
+
+        <div class="tarjetas">
+
+            <a class="tarjeta" href="modelo/act_donante.php">
+                <strong>Actualizar donantes</strong>
+                <span>Modificar los datos de los donantes.</span>
+            </a>
+
+            <a class="tarjeta" href="modelo/act_beneficiario.php">
+                <strong>Actualizar beneficiarios</strong>
+                <span>Modificar los datos de los beneficiarios.</span>
+            </a>
+
+            <a class="tarjeta" href="modelo/eliminar_usuario.php">
+                <strong>Eliminar usuarios</strong>
+                <span>Gestionar la eliminación de registros.</span>
+            </a>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+
+    Nimaey Foundation
+    <br>
+    Sembrando esperanza, cosechando futuro.
+
+</footer>
 
 </body>
 </html>

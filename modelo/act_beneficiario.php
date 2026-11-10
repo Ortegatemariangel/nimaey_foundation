@@ -32,10 +32,20 @@ if(isset($_POST['actualizar']))
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
+
 <head>
-    <title>Actualizar Beneficiario</title>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nimaey Foundation</title>
+
+    <link rel="stylesheet" href="../estilos.css">
+
 </head>
+
 <body>
 
 <h1>Actualizar Beneficiario</h1>
