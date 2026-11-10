@@ -1,62 +1,9 @@
 <?php
-    require '../config/conexion.php';
-
-    session_start();
-
-    if(!isset($_SESSION['username']))
-    {
-        header('location: ../index.php');
-    }
-
-    $conexion = conectar();
-
-    $query = "SELECT * FROM Beneficiario";
-
-    $resultado = mysqli_query($conexion,$query);
+require_once __DIR__ . '/../config/conexion.php';
+require_once __DIR__ . '/../config/seguridad.php';
+exigir_rol('Admin');
+$conexion = conectar();
+$resultado = mysqli_query($conexion, "SELECT id_usuario_beneficiario, nombre_beneficiario, correo_beneficiario, fecha_registro_beneficiario FROM Beneficiario ORDER BY nombre_beneficiario");
+if (!$resultado) { error_log(mysqli_error($conexion)); http_response_code(500); exit('No fue posible consultar los beneficiarios.'); }
 ?>
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Nimaey Foundation</title>
-
-    <link rel="stylesheet" href="../estilos.css">
-
-</head>
-
-<body>
-
-<h1>Consulta Beneficiarios</h1>
-
-<table border="1">
-
-<tr>
-    <th>ID</th>
-    <th>Nombre</th>
-    <th>Correo</th>
-    <th>Fecha Registro</th>
-</tr>
-
-<?php
-while($fila=mysqli_fetch_array($resultado))
-{
-    echo "<tr>";
-
-    echo "<td>".$fila['id_usuario_beneficiario']."</td>";
-    echo "<td>".$fila['nombre_beneficiario']."</td>";
-    echo "<td>".$fila['correo_beneficiario']."</td>";
-    echo "<td>".$fila['fecha_registro_beneficiario']."</td>";
-
-    echo "</tr>";
-}
-?>
-
-</table>
-
-</body>
-</html>
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Beneficiarios | Nimaey</title><link rel="stylesheet" href="../estilos.css"></head><body class="app-body"><header class="topbar"><a class="brand" href="../pagina_usuario.php"><span class="brand-mark">N</span><span>Nimaey <small>FOUNDATION</small></span></a><a class="btn btn-outline-light btn-small" href="cerrar_sesion.php">Cerrar sesión</a></header><main class="page-wrap"><div class="page-heading"><div><p class="eyebrow">ADMINISTRACIÓN</p><h1>Beneficiarios registrados</h1><p>Consulta la información de los estudiantes registrados.</p></div><a class="btn btn-secondary" href="../pagina_usuario.php">← Volver al panel</a></div><section class="panel-card"><div class="table-wrap"><table><thead><tr><th>Identificación</th><th>Nombre</th><th>Correo</th><th>Fecha de registro</th></tr></thead><tbody><?php while ($fila = mysqli_fetch_assoc($resultado)): ?><tr><td><?= escapar($fila['id_usuario_beneficiario']) ?></td><td><?= escapar($fila['nombre_beneficiario']) ?></td><td><?= escapar($fila['correo_beneficiario']) ?></td><td><?= escapar($fila['fecha_registro_beneficiario']) ?></td></tr><?php endwhile; ?></tbody></table></div></section></main><footer>Nimaey Foundation · Sembrando esperanza, cosechando futuro.</footer></body></html>
