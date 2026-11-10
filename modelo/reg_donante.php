@@ -1,92 +1,41 @@
 <?php
-    error_reporting(E_ALL);
-    ini_set('display_errors', '1');
+require_once __DIR__ . '/../config/conexion.php';
+require_once __DIR__ . '/../config/seguridad.php';
+exigir_rol('Admin');
 
-    require '../config/conexion.php';
+$error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = trim($_POST['id_usuario_donante'] ?? '');
+    $nombre = trim($_POST['nombre_donante'] ?? '');
+    $correo = trim($_POST['correo_donante'] ?? '');
+    $contrasena = $_POST['contrasena_donante'] ?? '';
+    $fecha = $_POST['fecha_registro_donante'] ?? '';
 
-    session_start();
-
-    if(!isset($_SESSION['username']))
-    {
-        header('location: ../index.php');
+    if ($id === '' || $nombre === '' || !filter_var($correo, FILTER_VALIDATE_EMAIL) || $contrasena === '' || $fecha === '') {
+        $error = 'Revisa los datos: todos los campos son obligatorios y el correo debe ser válido.';
+    } else {
+        $conexion = conectar();
+        $sql = "INSERT INTO Donante (id_usuario_donante, nombre_donante, correo_donante, contraseña_donante, fecha_registro_donante) VALUES (?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conexion, $sql);
+        mysqli_stmt_bind_param($stmt, 'sssss', $id, $nombre, $correo, $contrasena, $fecha);
+        if (mysqli_stmt_execute($stmt)) {
+            mysqli_stmt_close($stmt); mysqli_close($conexion);
+            header('Location: registro_exitoso.php?tipo=donante');
+            exit();
+        }
+        $error = mysqli_errno($conexion) === 1062 ? 'Ya existe un registro con ese identificador.' : 'No fue posible guardar el donante. Verifica los datos e inténtalo nuevamente.';
+        error_log('Error al registrar donante: ' . mysqli_error($conexion));
+        mysqli_stmt_close($stmt); mysqli_close($conexion);
     }
-
-    $conexion = conectar();
-
-    if(isset($_POST['registrar']))
-    {
-        $id_usuario_donante = $_POST['id_usuario_donante'];
-        $nombre_donante = $_POST['nombre_donante'];
-        $correo_donante = $_POST['correo_donante'];
-        $contrasena_donante = $_POST['contrasena_donante'];
-        $fecha_registro_donante = $_POST['fecha_registro_donante'];
-
-        $query = "INSERT INTO Donante
-        VALUES(
-        '$id_usuario_donante',
-        '$nombre_donante',
-        '$correo_donante',
-        '$contrasena_donante',
-        '$fecha_registro_donante'
-        )";
-
-        mysqli_query($conexion,$query)
-        or trigger_error("Error: ".mysqli_error($conexion));
-
-        echo "<h3>Donante registrado correctamente</h3>";
-    }
+}
 ?>
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Nimaey Foundation</title>
-
-    <link rel="stylesheet" href="../estilos.css">
-
-</head>
-
-<body>
-    
-<h1>Registrar Donante</h1>
-
-<form method="POST">
-
-    <label>ID:</label>
-    <input type="text" name="id_usuario_donante" required>
-
-    <br><br>
-
-    <label>Nombre:</label>
-    <input type="text" name="nombre_donante" required>
-
-    <br><br>
-
-    <label>Correo:</label>
-    <input type="email" name="correo_donante" required>
-
-    <br><br>
-
-    <label>Contraseña:</label>
-    <input type="text" name="contrasena_donante" required>
-
-    <br><br>
-
-    <label>Fecha:</label>
-    <input type="date" name="fecha_registro_donante" required>
-
-    <br><br>
-
-    <button type="submit" name="registrar">
-        Registrar
-    </button>
-
-</form>
-
-</body>
-</html>
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Registrar donante | Nimaey</title><link rel="stylesheet" href="../estilos.css"></head>
+<body class="app-body"><header class="topbar"><a class="brand" href="../pagina_usuario.php"><span class="brand-mark">N</span><span>Nimaey <small>FOUNDATION</small></span></a><a class="btn btn-outline-light btn-small" href="cerrar_sesion.php">Cerrar sesión</a></header>
+<main class="page-wrap"><div class="page-heading"><div><p class="eyebrow">ADMINISTRACIÓN</p><h1>Registrar donante</h1><p>Completa los datos de la persona que desea brindar apoyo.</p></div><a class="btn btn-secondary" href="../pagina_usuario.php">← Volver al panel</a></div>
+<section class="panel-card"><?php if ($error !== ''): ?><div class="mensaje"><?= escapar($error) ?></div><?php endif; ?>
+<form method="POST"><label for="id">Identificación</label><input id="id" type="text" name="id_usuario_donante" maxlength="10" required value="<?= escapar($_POST['id_usuario_donante'] ?? '') ?>">
+<label for="nombre">Nombre completo</label><input id="nombre" type="text" name="nombre_donante" maxlength="30" required value="<?= escapar($_POST['nombre_donante'] ?? '') ?>">
+<label for="correo">Correo electrónico</label><input id="correo" type="email" name="correo_donante" maxlength="30" required value="<?= escapar($_POST['correo_donante'] ?? '') ?>">
+<label for="contrasena">Contraseña inicial</label><input id="contrasena" type="password" name="contrasena_donante" required autocomplete="new-password">
+<label for="fecha">Fecha de registro</label><input id="fecha" type="date" name="fecha_registro_donante" required value="<?= escapar($_POST['fecha_registro_donante'] ?? date('Y-m-d')) ?>">
+<div class="form-actions"><a class="btn btn-secondary" href="../pagina_usuario.php">Cancelar</a><button type="submit">Guardar donante</button></div></form></section></main><footer>Nimaey Foundation · Sembrando esperanza, cosechando futuro.</footer></body></html>
