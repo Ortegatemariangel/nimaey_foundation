@@ -1,63 +1,9 @@
 <?php
-    require '../config/conexion.php';
-
-    session_start();
-
-    if(!isset($_SESSION['username']))
-    {
-        header('location: ../index.php');
-    }
-
-    $conexion = conectar();
-
-    $query = "SELECT * FROM Donante";
-
-    $resultado = mysqli_query($conexion,$query);
+require_once __DIR__ . '/../config/conexion.php';
+require_once __DIR__ . '/../config/seguridad.php';
+exigir_rol('Admin');
+$conexion = conectar();
+$resultado = mysqli_query($conexion, "SELECT id_usuario_donante, nombre_donante, correo_donante, fecha_registro_donante FROM Donante ORDER BY nombre_donante");
+if (!$resultado) { error_log(mysqli_error($conexion)); http_response_code(500); exit('No fue posible consultar los donantes.'); }
 ?>
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Nimaey Foundation</title>
-
-    <link rel="stylesheet" href="../estilos.css">
-
-</head>
-
-<body>
-
-<h1>Consulta Donantes</h1>
-
-<table border="1">
-
-<tr>
-    <th>ID</th>
-    <th>Nombre</th>
-    <th>Correo</th>
-    <th>Fecha Registro</th>
-</tr>
-
-<?php
-while($fila=mysqli_fetch_array($resultado))
-{
-    echo "<tr>";
-
-    echo "<td>".$fila['id_usuario_donante']."</td>";
-    echo "<td>".$fila['nombre_donante']."</td>";
-    echo "<td>".$fila['correo_donante']."</td>";
-    echo "<td>".$fila['fecha_registro_donante']."</td>";
-
-    echo "</tr>";
-}
-?>
-
-</table>
-
-</body>
-</html>
-
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Donantes | Nimaey</title><link rel="stylesheet" href="../estilos.css"></head><body class="app-body"><header class="topbar"><a class="brand" href="../pagina_usuario.php"><span class="brand-mark">N</span><span>Nimaey <small>FOUNDATION</small></span></a><a class="btn btn-outline-light btn-small" href="cerrar_sesion.php">Cerrar sesión</a></header><main class="page-wrap"><div class="page-heading"><div><p class="eyebrow">ADMINISTRACIÓN</p><h1>Donantes registrados</h1><p>Consulta la información básica de las personas donantes.</p></div><a class="btn btn-secondary" href="../pagina_usuario.php">← Volver al panel</a></div><section class="panel-card"><div class="table-wrap"><table><thead><tr><th>Identificación</th><th>Nombre</th><th>Correo</th><th>Fecha de registro</th></tr></thead><tbody><?php while ($fila = mysqli_fetch_assoc($resultado)): ?><tr><td><?= escapar($fila['id_usuario_donante']) ?></td><td><?= escapar($fila['nombre_donante']) ?></td><td><?= escapar($fila['correo_donante']) ?></td><td><?= escapar($fila['fecha_registro_donante']) ?></td></tr><?php endwhile; ?></tbody></table></div></section></main><footer>Nimaey Foundation · Sembrando esperanza, cosechando futuro.</footer></body></html>
