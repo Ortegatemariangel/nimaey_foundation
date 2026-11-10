@@ -1,67 +1,12 @@
 <?php
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-require_once __DIR__ . "/../config/conexion.php";
-
-session_start();
-
-if($_SERVER["REQUEST_METHOD"]=="POST")
-{
-    $tipo_usuario = $_POST['tipo_usuario'];
-    $correo = $_POST['correo'];
-    $contrasena = $_POST['contrasena'];
-
-    $conexion = conectar();
-
-    if($tipo_usuario == "Admin")
-    {
-        $sql = "SELECT *
-                FROM Admin
-                WHERE correo_admin = '$correo'
-                AND contraseña_admin = '$contrasena'";
-    }
-
-    elseif($tipo_usuario == "Donante")
-    {
-        $sql = "SELECT *
-                FROM Donante
-                WHERE correo_donante = '$correo'
-                AND contraseña_donante = '$contrasena'";
-    }
-
-    elseif($tipo_usuario == "Beneficiario")
-    {
-        $sql = "SELECT *
-                FROM Beneficiario
-                WHERE correo_beneficiario = '$correo'
-                AND contraseña_beneficiario = '$contrasena'";
-    }
-
-    $consulta = mysqli_query($conexion,$sql);
-
-    if(!$consulta)
-    {
-        die("Error SQL: ".mysqli_error($conexion));
-    }
-
-    $resultado = mysqli_fetch_assoc($consulta);
-
-    if($resultado)
-    {
-        $_SESSION['username'] = $correo;
-        $_SESSION['tipo_usuario'] = $tipo_usuario;
-
-        header("Location: ../pagina_usuario.php");
-        exit();
-    }
-    else
-    {
-        echo "<h3>Usuario o contraseña incorrectos</h3>";
-        echo "<a href='../index.php'>Volver</a>";
-    }
-}
-
-?>
+require_once __DIR__ . '/../config/conexion.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') { header('Location: ../index.php'); exit(); }
+$roles=['Admin'=>['tabla'=>'Admin','correo'=>'correo_admin','clave'=>'contraseña_admin'],'Donante'=>['tabla'=>'Donante','correo'=>'correo_donante','clave'=>'contraseña_donante'],'Beneficiario'=>['tabla'=>'Beneficiario','correo'=>'correo_beneficiario','clave'=>'contraseña_beneficiario']];
+$tipo=$_POST['tipo_usuario']??''; $correo=trim($_POST['correo']??''); $clave=$_POST['contrasena']??'';
+if(!isset($roles[$tipo])||!filter_var($correo,FILTER_VALIDATE_EMAIL)||$clave===''){header('Location: ../index.php?error=datos');exit();}
+$c=$roles[$tipo];$conexion=conectar();$sql="SELECT {$c['correo']} FROM {$c['tabla']} WHERE {$c['correo']}=? AND {$c['clave']}=? LIMIT 1";$stmt=mysqli_prepare($conexion,$sql);
+if(!$stmt){mysqli_close($conexion);error_log('Error preparando autenticación Nimaey.');header('Location: ../index.php?error=general');exit();}
+mysqli_stmt_bind_param($stmt,'ss',$correo,$clave);mysqli_stmt_execute($stmt);$resultado=mysqli_stmt_get_result($stmt);$usuario=mysqli_fetch_assoc($resultado);mysqli_stmt_close($stmt);mysqli_close($conexion);
+if($usuario){session_regenerate_id(true);$_SESSION['username']=$correo;$_SESSION['tipo_usuario']=$tipo;header('Location: ../pagina_usuario.php');exit();}
+header('Location: ../index.php?error=credenciales');exit();
